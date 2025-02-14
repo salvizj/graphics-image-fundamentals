@@ -2,10 +2,9 @@ import math
 import random
 from matplotlib import cm
 import matplotlib.pyplot as plt
-import numpy as np
 
 # Variables to change (min polygon vertices: 3 and min step: 1)
-polygon_start_verteces = 5
+polygon_start_verteces = 10
 polygon_end_verteces = 3
 interpolation_steps = 3
 
@@ -57,12 +56,27 @@ def interpolate_polygon(polygon_start, polygon_end, t):
     return interpolated_polygon
 
 def morph_polygon(polygon_start, polygon_end, steps):
+    _, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+
+    ax1.set_title("Adding/Removing Vertices")
+    ax1.set_xlabel("X-axis")
+    ax1.set_ylabel("Y-axis")
+
+    x_vals, y_vals = zip(*polygon_start)
+    ax1.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'Before adding or removing vertices {len(polygon_start)}', marker='o')
 
     while len(polygon_start) < len(polygon_end):
         add_vertex(polygon_start)
-
     while len(polygon_start) > len(polygon_end):
         remove_vertex(polygon_start)
+
+    x_vals, y_vals = zip(*polygon_start)
+    ax1.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'After removing or adding verices {len(polygon_start)}', marker='o')
+
+    ax1.legend()
+    ax2.set_title("Morphing Steps")
+    ax2.set_xlabel("X-axis")
+    ax2.set_ylabel("Y-axis")
 
     colors = cm.viridis([i / steps for i in range(steps + 1)])
     
@@ -73,15 +87,13 @@ def morph_polygon(polygon_start, polygon_end, steps):
         x_vals, y_vals = zip(*interpolated_polygon)  
     
         # Plot the points and add the first point again at the end to close the polygon
-        plt.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'Step {step}', marker='o', color=colors[step])
+        ax2.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'Step {step}', marker='o', color=colors[step])
 
         plt.pause(1)  
 
-    plt.title("Morphing Steps")
     plt.legend()
     plt.tight_layout()
     plt.show()
-
 
 def main():
     polygon_start = generate_polygon_vertices(polygon_start_verteces)
