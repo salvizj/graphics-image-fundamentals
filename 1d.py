@@ -8,7 +8,7 @@ polygon_start_verteces = 10
 polygon_end_verteces = 3
 interpolation_steps = 3
 
-# Generate polygons by giving n which is a number and func return list with tuplets
+# Generate equilateral polygons by giving n which is a number and func return list with tuplets
 def generate_polygon_vertices(n):
     if n < 3:
         raise ValueError("A polygon must have at least 3 vertices.")
