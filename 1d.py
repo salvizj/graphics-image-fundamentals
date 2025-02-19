@@ -8,7 +8,7 @@ polygon_start_verteces = 10
 polygon_end_verteces = 3
 interpolation_steps = 3
 
-# Generate equilateral polygons by giving n which is a number and func return list with tuplets
+# Generate equilateral polygons by giving vertex count and func return list with tuplets of vertices
 def generate_polygon_vertices(n):
     if n < 3:
         raise ValueError("A polygon must have at least 3 vertices.")
@@ -17,7 +17,7 @@ def generate_polygon_vertices(n):
     angle_deg = 360 / n
     
     for i in range(n):
-        angle = math.radians(angle_deg * i)  # Convert to radians
+        angle = math.radians(angle_deg * i)  
         x = r * round(math.cos(angle),4)
         y = r * round(math.sin(angle),4)
         polygon_vertices.append((x, y))  
@@ -46,7 +46,7 @@ def add_vertex(polygon_verteces):
 
     polygon_verteces.insert(random_index + 1, (new_vertex_x, new_vertex_y))
 
-def interpolate_polygon(polygon_start, polygon_end, t):
+def parametric_interpolate_polygon(polygon_start, polygon_end, t):
     interpolated_polygon = []
 
     for p_s, p_e in zip(polygon_start, polygon_end):
