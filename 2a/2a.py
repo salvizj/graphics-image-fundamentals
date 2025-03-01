@@ -12,7 +12,7 @@ def get_grayscale_matrix(image_path):
 
 def dft(input_list, inverse=False):
     N = len(input_list)
-    output_list= [0.0 + 0.0j for _ in range(N)]
+    output_list= [0.0j for _ in range(N)]
 
     sign = -1 if inverse else 1
 
@@ -33,7 +33,7 @@ def dft(input_list, inverse=False):
 
 def dft2d(matrix, inverse=False):
     rows, cols = len(matrix), len(matrix[0])
-    result_matrix = [[0.0 + 0.0j for _ in range(cols)] for _ in range(rows)]
+    result_matrix = [[0.0j for _ in range(cols)] for _ in range(rows)]
 
     for j in range(cols):
         column_data = [matrix[i][j] for i in range(rows)]  
