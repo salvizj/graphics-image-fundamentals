@@ -1,14 +1,15 @@
 import math
 import matplotlib.pyplot as plt
-import cv2
+from PIL import Image
 import numpy as np
 
-def get_grayscale_matrix(image_path):
-    matrix= cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    if matrix is None:  
+def read_grayscale_image(image_path):
+    try:
+        img = Image.open(image_path)
+        grayscale_img = img.convert('L')
+        return np.array(grayscale_img)
+    except FileNotFoundError:
         raise FileNotFoundError(f"Error: Unable to load image at '{image_path}'")
-
-    return matrix
 
 def dft(input_list, inverse=False):
     N = len(input_list)
@@ -49,16 +50,16 @@ def dft2d(matrix, inverse=False):
 def main():
     img_path = './img.png'
 
-    img_matrix = get_grayscale_matrix(img_path)
+    grayscale_image = read_grayscale_image(img_path)
 
-    dft_matrix = dft2d(img_matrix)
+    dft_matrix = dft2d(grayscale_image)
     magnitude_spectrum_dft = np.log(1 + np.array(np.abs(dft_matrix)))
 
     idft_matrix = dft2d(dft_matrix, inverse=True)
     reconstructed_image_dft = np.real(np.array(idft_matrix)).astype(np.uint8)
 
     # Comparing results to built in FFT and IFFT
-    fft_matrix = np.fft.fft2(img_matrix)
+    fft_matrix = np.fft.fft2(grayscale_image)
     magnitude_spectrum_fft = np.log(1 + np.abs(fft_matrix))
 
     ifft_matrix = np.fft.ifft2(fft_matrix)
