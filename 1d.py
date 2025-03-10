@@ -3,8 +3,13 @@ import random
 from matplotlib import cm
 import matplotlib.pyplot as plt
 
+# Constants (min polygon vertices: 3 and min step: 1)
+POLYGON_START_VERTICES = 10
+POLYGON_END_VERTICES = 3
+PARAMETRIC_INTERPOLATION_STEPS = 3
 
-# Generate equilateral polygons by giving vertex count. Func returns list with tuplets of vertices
+# Generates a regular polygon with `n` vertices evenly spaced around a circle of radius `r`.
+# Returns a list of (x, y) coordinate tuples for each vertex.
 def generate_polygon_vertices(n):
     if n < 3:
         raise ValueError("A polygon must have at least 3 vertices.")
@@ -104,15 +109,10 @@ def morph_polygon(polygon_start, polygon_end, steps):
     plt.show()
 
 def main():
-    # Variables to change (min polygon vertices: 3 and min step: 1)
-    polygon_start_verteces = 10
-    polygon_end_verteces = 3
-    parametric_interpolation_steps = 3
+    polygon_start = generate_polygon_vertices(POLYGON_START_VERTICES)
+    polygon_end = generate_polygon_vertices(POLYGON_END_VERTICES)
 
-    polygon_start = generate_polygon_vertices(polygon_start_verteces)
-    polygon_end = generate_polygon_vertices(polygon_end_verteces)
-
-    morph_polygon(polygon_start, polygon_end, parametric_interpolation_steps)
+    morph_polygon(polygon_start, polygon_end, PARAMETRIC_INTERPOLATION_STEPS)
 
 if __name__ == "__main__":
     main()

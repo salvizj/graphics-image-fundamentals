@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 
+# Using a 100x100 px image for faster calculation)
+IMAGE_PATH = './img.png'
+
 def read_grayscale_image(image_path):
     try:
         img = Image.open(image_path)
@@ -48,9 +51,8 @@ def dft2d(matrix, inverse=False):
     return result_matrix
 
 def main():
-    img_path = './img.png'
 
-    grayscale_image = read_grayscale_image(img_path)
+    grayscale_image = read_grayscale_image(IMAGE_PATH)
 
     dft_matrix = dft2d(grayscale_image)
     magnitude_spectrum_dft = np.log(1 + np.array(np.abs(dft_matrix)))
