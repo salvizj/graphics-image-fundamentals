@@ -1,21 +1,35 @@
 from PIL import Image
 
-IMAGE_WIDTH = 500
-IMAGE_HEIGHT = 500
+IMAGE_WIDTH = 400
+IMAGE_HEIGHT = 400
 BACKGROUND_COLOR = (255, 255, 255)
-PIXEL_COLOR = (255, 0, 0)
+PIXEL_COLOR = (0, 0, 0)
+IMAGE_NAME = "polygon_fill.png"
 
-TRIANGLE = [
-    (50.0, 50.0),
-    (150.0, 200.0),
-    (250.0, 50.0)
+PENTAGON = [
+    (30, 60),
+    (100, 30),
+    (180, 50),
+    (150, 150),
+    (60, 120)
 ]
 
-QUADRILATERAL = [
-    (60.0, 60.0),
-    (240.0, 80.0),
-    (220.0, 220.0),
-    (80.0, 200.0)
+TRIANGLE = [
+    (50, 100),  
+    (150, 50),  
+    (100, 200), 
+]
+
+NONAGON = [
+    (250, 100),
+    (230, 160),
+    (170, 200),
+    (100, 190),
+    (60, 130),
+    (60, 70),
+    (100, 10),
+    (170, 0),
+    (230, 40),
 ]
 
 def edges_from_polygon(polygon):
@@ -114,22 +128,22 @@ def fill_polygon(polygon):
 
     return filled_pixels
 
-def show_polygon_fill(filled_pixels, background_color, pixel_color, image_width, image_height):
-    image = Image.new("RGB", (image_width, image_height), background_color)
+def show_polygon_fill(filled_pixels):
+    image = Image.new("RGB", (IMAGE_WIDTH, IMAGE_HEIGHT), BACKGROUND_COLOR)
 
     pixels = image.load()
 
     for x, y in filled_pixels:
-        if 0 <= x < image_width and 0 <= y < image_height:
-            pixels[x, y] = pixel_color
-    image.save("polygon_fill.png")
+        if 0 <= x < IMAGE_WIDTH and 0 <= y < IMAGE_HEIGHT:
+            pixels[x, y] = PIXEL_COLOR
+    image.save(IMAGE_NAME)
     image.show()
 
 def main():
-    polygon = QUADRILATERAL       
+    polygon = TRIANGLE
 
     filled_pixels = fill_polygon(polygon)
-    show_polygon_fill(filled_pixels, BACKGROUND_COLOR, PIXEL_COLOR, IMAGE_WIDTH, IMAGE_HEIGHT)
+    show_polygon_fill(filled_pixels)
 
 if __name__ == "__main__":
     main()

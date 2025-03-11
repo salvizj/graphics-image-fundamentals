@@ -6,13 +6,13 @@ import numpy as np
 # Using a 100x100 px image for faster calculation)
 IMAGE_PATH = './img.png'
 
-def read_grayscale_image(image_path):
+def read_grayscale_image():
     try:
-        img = Image.open(image_path)
+        img = Image.open(IMAGE_PATH)
         grayscale_img = img.convert('L')
         return np.array(grayscale_img)
     except FileNotFoundError:
-        raise FileNotFoundError(f"Error: Unable to load image at '{image_path}'")
+        raise FileNotFoundError(f"Error: Unable to load image at '{IMAGE_PATH}'")
 
 def dft(input_list, inverse=False):
     N = len(input_list)
@@ -52,7 +52,7 @@ def dft2d(matrix, inverse=False):
 
 def main():
 
-    grayscale_image = read_grayscale_image(IMAGE_PATH)
+    grayscale_image = read_grayscale_image()
 
     dft_matrix = dft2d(grayscale_image)
     magnitude_spectrum_dft = np.log(1 + np.array(np.abs(dft_matrix)))
