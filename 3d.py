@@ -58,9 +58,9 @@ def bubble_sort_polygon_edges(polygon_edges, sort_by='y'):
 def line_intersect(edge, y):
     (x0, y0), (x1, y1) = edge
 
-    if y1 == y0:
+    if y0 == y1:
         return None
-
+    
     t = (y - y0) / (y1 - y0)
     x_intersect = x0 + t * (x1 - x0)
     return x_intersect
@@ -77,25 +77,31 @@ def fill_polygon(polygon):
     active_edges = []
 
     for y_level in range(y_min, y_max + 1):
+
         for edge in polygon_edges:
             (_, y0), (_, y1) = edge
 
-            if y0 < y1:
-                edge_y_min = y0
-            else:
-                edge_y_min = y1
+            edge_y_min = min(y0,y1)
 
             if y_level == edge_y_min:
                 active_edges.append(edge)
 
+        active_edges = [edge for edge in active_edges if max(edge[0][1], edge[1][1]) > y_level]
+
         intersections = []
         for edge in active_edges:
-            (_, y0), (_, y1) = edge
-            x_intersection = line_intersect(edge, y_level)
-            if x_intersection is not None:
-                intersections.append((x_intersection, y_level))
+            (x0, y0), (x1, y1) = edge
 
-        active_edges = [edge for edge in active_edges if max(edge[0][1], edge[1][1]) > y_level]
+            if y0 == y1: 
+                x_left = min(x0, x1)
+                x_right = max(x0, x1)
+                for x in range(int(round(x_left)), int(round(x_right)) + 1):
+                    filled_pixels.append((x, y_level))
+            else: 
+                x_intersection = line_intersect(edge, y_level)
+                if x_intersection is not None:
+                    intersections.append((x_intersection, y_level))
+
 
         intersections.sort(key=lambda point: point[0])
 
