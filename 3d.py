@@ -114,13 +114,13 @@ def fill_polygon(polygon):
 
     return filled_pixels
 
-def show_polygon_fill(filled_pixels, background_color, pixel_color, image_size=(300, 300)):
-    image = Image.new("RGB", image_size, background_color)
+def show_polygon_fill(filled_pixels, background_color, pixel_color, image_width, image_height):
+    image = Image.new("RGB", (image_width, image_height), background_color)
 
     pixels = image.load()
 
     for x, y in filled_pixels:
-        if 0 <= x < image_size[0] and 0 <= y < image_size[1]:
+        if 0 <= x < image_width and 0 <= y < image_height:
             pixels[x, y] = pixel_color
     image.save("polygon_fill.png")
     image.show()
@@ -129,7 +129,7 @@ def main():
     polygon = QUADRILATERAL       
 
     filled_pixels = fill_polygon(polygon)
-    show_polygon_fill(filled_pixels, BACKGROUND_COLOR, PIXEL_COLOR, image_size=(IMAGE_WIDTH, IMAGE_HEIGHT))
+    show_polygon_fill(filled_pixels, BACKGROUND_COLOR, PIXEL_COLOR, IMAGE_WIDTH, IMAGE_HEIGHT)
 
 if __name__ == "__main__":
     main()
