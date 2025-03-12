@@ -140,6 +140,7 @@ def show_polygon_fill(filled_pixels):
     image.show()
 
 def main():
+    # We can change polygon type
     polygon = TRIANGLE
 
     filled_pixels = fill_polygon(polygon)
