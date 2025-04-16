@@ -2,105 +2,101 @@ import math
 import random
 from matplotlib import cm
 import matplotlib.pyplot as plt
+from typing import List, Tuple
 
 # Constants (min polygon vertices: 3 and min step: 1)
-POLYGON_START_VERTICES = 10
-POLYGON_END_VERTICES = 3
-PARAMETRIC_INTERPOLATION_STEPS = 3
+# Polygon end and start vertice difference can`t be bigger than step count
+POLYGON_START_VERTICES = 4
+POLYGON_END_VERTICES = 11
+PARAMETRIC_INTERPOLATION_STEPS = 7
 
 # Generates a regular polygon with `n` vertices evenly spaced around a circle of radius `r`.
 # Returns a list of (x, y) coordinate tuples for each vertex.
-def generate_polygon_vertices(n):
+def generate_polygon_vertices(n: int) -> List[Tuple[float, float]]:
     if n < 3:
         raise ValueError("A polygon must have at least 3 vertices.")
-    r = 4 
+    r = 4
     polygon_vertices = []
     angle_deg = 360 / n
     
     for i in range(n):
         angle = math.radians(angle_deg * i)  
-        x = r * round(math.cos(angle),4)
-        y = r * round(math.sin(angle),4)
+        x = r * round(math.cos(angle), 4)
+        y = r * round(math.sin(angle), 4)
         polygon_vertices.append((x, y))  
-        
+    
     return polygon_vertices
 
-def remove_vertex(polygon_verteces):
-    if len(polygon_verteces) == 0:
-        return polygon_verteces
-        
-    random_index = random.randint(0, len(polygon_verteces) - 1)
-    polygon_verteces.pop(random_index)
-
-def add_vertex(polygon_verteces):
-    if len(polygon_verteces) == 0:
-        return polygon_verteces
+def remove_vertex(polygon_vertices: List[Tuple[float, float]]) -> None:
+    if len(polygon_vertices) == 0:
+        return
     
-    random_index = random.randint(0, len(polygon_verteces) - 1)
+    random_index = random.randint(0, len(polygon_vertices) - 1)
+    polygon_vertices.pop(random_index)
 
-    vertex_before = polygon_verteces[random_index]
+def add_vertex(polygon_vertices: List[Tuple[float, float]]) -> None:
+    if len(polygon_vertices) == 0:
+        return
+    
+    random_index = random.randint(0, len(polygon_vertices) - 1)
+
+    vertex_before = polygon_vertices[random_index]
     # Takes first vertex if out bounds
-    vertex_after = polygon_verteces[(random_index + 1) % len(polygon_verteces)]
+    vertex_after = polygon_vertices[(random_index + 1) % len(polygon_vertices)]
 
     new_vertex_x = (vertex_before[0] + vertex_after[0]) / 2
     new_vertex_y = (vertex_before[1] + vertex_after[1]) / 2
 
-    polygon_verteces.insert(random_index + 1, (new_vertex_x, new_vertex_y))
+    polygon_vertices.insert(random_index + 1, (new_vertex_x, new_vertex_y))
 
 def parametric_interpolate_polygon(polygon_start, polygon_end, t):
-    polygon = []
+    interpolated_polygon = []
 
-    for p_s, p_e in zip(polygon_start, polygon_end):
+    # Interpolate the overlapping vertices
+    for i in range(min(len(polygon_start), len(polygon_end))):
+        p_s = polygon_start[i]
+        p_e = polygon_end[i]
+
         interpolated_x = p_s[0] + (p_e[0] - p_s[0]) * t
         interpolated_y = p_s[1] + (p_e[1] - p_s[1]) * t
-        polygon.append((interpolated_x, interpolated_y))
-    return polygon
+        interpolated_polygon.append((interpolated_x, interpolated_y))
 
-# Adjust the start polygon's vertex count to match the generated end polygon's vertex count
-def adjust_polygon(polygon_start, polygon_end, ax1):
+    # Add remaining vertices from polygon_start
+    if len(polygon_start) > len(polygon_end):
+        for j in range(len(polygon_end), len(polygon_start)):
+            interpolated_polygon.append(polygon_start[j])
 
-    ax1.set_title("Adding/Removing vertices from generated starting polygon")
-    ax1.set_xlabel("X-axis")
-    ax1.set_ylabel("Y-axis")
-
-    x_vals, y_vals = zip(*polygon_start)
-    ax1.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'Before adding or removing vertices {len(polygon_start)}', marker='o')
-
-    while len(polygon_start) < len(polygon_end):
-        add_vertex(polygon_start)
-    while len(polygon_start) > len(polygon_end):
-        remove_vertex(polygon_start)
-
-    x_vals, y_vals = zip(*polygon_start)
-    ax1.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'After removing or adding vertices {len(polygon_start)}', marker='o')
-
-    ax1.legend()
+    return interpolated_polygon
 
 def morph_polygon(polygon_start, polygon_end, steps):
-    _, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6))
+    _, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 6))
 
-    adjust_polygon(polygon_start, polygon_end, ax1)
+    ax1.set_title("Generated end polygon")
+    ax1.set_xlabel("X-axis")
+    ax1.set_ylabel("Y-axis")
+    x_vals, y_vals = zip(*polygon_end)
+    ax1.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'Final Polygon {len(polygon_end)}', marker='o')
+    ax1.legend()
 
-    ax2.set_title("Generated end polygon")
+    ax2.set_title("Morphing from start to end polygon")
     ax2.set_xlabel("X-axis")
     ax2.set_ylabel("Y-axis")
-    x_vals, y_vals = zip(*polygon_end)
-    ax2.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'Final Polygon {len(polygon_end)}', marker='o')
-    ax2.legend()
-
-    ax3.set_title("Morphing from start to end polygon")
-    ax3.set_xlabel("X-axis")
-    ax3.set_ylabel("Y-axis")
 
     colors = cm.viridis([i / steps for i in range(steps + 1)])
     
     for step in range(steps + 1):
         t = step / steps
+
         interpolated_polygon = parametric_interpolate_polygon(polygon_start, polygon_end, t)
+
+        if len(polygon_start) > len(polygon_end):
+            remove_vertex(polygon_start)
+        elif len(polygon_start) < len(polygon_end):
+            add_vertex(polygon_start)
 
         x_vals, y_vals = zip(*interpolated_polygon)  
     
-        ax3.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'Step {step}', marker='o', color=colors[step])
+        ax2.plot(x_vals + (x_vals[0],), y_vals + (y_vals[0],), label=f'Step {step}', marker='o', color=colors[step])
 
         plt.pause(1)  
 
@@ -109,6 +105,12 @@ def morph_polygon(polygon_start, polygon_end, steps):
     plt.show()
 
 def main():
+    min_polygon = min(POLYGON_START_VERTICES, POLYGON_END_VERTICES)
+    max_polygon = max(POLYGON_START_VERTICES, POLYGON_END_VERTICES)
+
+    if (max_polygon - min_polygon) > PARAMETRIC_INTERPOLATION_STEPS:
+        raise ValueError("POLYGON_START_VERTICES and POLYGON_END_VERTICES difference can`t be bigger than PARAMETRIC_INTERPOLATION_STEP count")
+
     polygon_start = generate_polygon_vertices(POLYGON_START_VERTICES)
     polygon_end = generate_polygon_vertices(POLYGON_END_VERTICES)
 

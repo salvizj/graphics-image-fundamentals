@@ -1,4 +1,5 @@
 from PIL import Image
+from typing import List, Tuple
 
 IMAGE_WIDTH = 400
 IMAGE_HEIGHT = 400
@@ -6,7 +7,7 @@ BACKGROUND_COLOR = (255, 255, 255)
 PIXEL_COLOR = (0, 0, 0)
 IMAGE_NAME = "polygon_fill.png"
 
-PENTAGON = [
+PENTAGON: List[Tuple[int, int]] = [
     (30, 60),
     (100, 30),
     (180, 50),
@@ -14,13 +15,13 @@ PENTAGON = [
     (60, 120)
 ]
 
-TRIANGLE = [
+TRIANGLE: List[Tuple[int, int]] = [
     (50, 100),  
     (150, 50),  
     (100, 200), 
 ]
 
-NONAGON = [
+NONAGON: List[Tuple[int, int]] = [
     (250, 100),
     (230, 160),
     (170, 200),
@@ -32,7 +33,7 @@ NONAGON = [
     (230, 40),
 ]
 
-def edges_from_polygon(polygon):
+def edges_from_polygon(polygon: List[Tuple[int, int]]) -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
     edges = []
     vertice_count = len(polygon)
     for i in range(vertice_count):
@@ -41,7 +42,7 @@ def edges_from_polygon(polygon):
         edges.append((start, end))
     return edges
 
-def bubble_sort_polygon_edges(polygon_edges, sort_by='y'):
+def bubble_sort_polygon_edges(polygon_edges: List[Tuple[Tuple[int, int], Tuple[int, int]]], sort_by: str = 'y') -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
     edge_count = len(polygon_edges)
 
     for i in range(edge_count):
@@ -69,7 +70,7 @@ def bubble_sort_polygon_edges(polygon_edges, sort_by='y'):
 
     return polygon_edges
 
-def line_intersect(edge, y):
+def line_intersect(edge: Tuple[Tuple[int, int], Tuple[int, int]], y: int) -> float:
     (x0, y0), (x1, y1) = edge
 
     if y0 == y1:
@@ -79,7 +80,7 @@ def line_intersect(edge, y):
     x_intersect = x0 + t * (x1 - x0)
     return x_intersect
 
-def fill_polygon(polygon):
+def fill_polygon(polygon: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
     filled_pixels = []
     
     polygon_edges = edges_from_polygon(polygon)
@@ -116,7 +117,6 @@ def fill_polygon(polygon):
                 if x_intersection is not None:
                     intersections.append((x_intersection, y_level))
 
-
         intersections.sort(key=lambda point: point[0])
 
         while len(intersections) > 1:
@@ -128,7 +128,7 @@ def fill_polygon(polygon):
 
     return filled_pixels
 
-def show_polygon_fill(filled_pixels):
+def show_polygon_fill(filled_pixels: List[Tuple[int, int]]) -> None:
     image = Image.new("RGB", (IMAGE_WIDTH, IMAGE_HEIGHT), BACKGROUND_COLOR)
 
     pixels = image.load()
@@ -139,7 +139,7 @@ def show_polygon_fill(filled_pixels):
     image.save(IMAGE_NAME)
     image.show()
 
-def main():
+def main() -> None:
     # We can change polygon type
     polygon = TRIANGLE
 

@@ -2,11 +2,12 @@ import math
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
+from typing import List
 
 # Using a 100x100 px image for faster calculation)
 IMAGE_PATH = './img.png'
 
-def read_grayscale_image():
+def read_grayscale_image() -> np.ndarray:
     try:
         img = Image.open(IMAGE_PATH)
         grayscale_img = img.convert('L')
@@ -14,9 +15,9 @@ def read_grayscale_image():
     except FileNotFoundError:
         raise FileNotFoundError(f"Error: Unable to load image at '{IMAGE_PATH}'")
 
-def dft(input_list, inverse=False):
+def dft(input_list: List[complex], inverse: bool = False) -> List[complex]:
     N = len(input_list)
-    output_list= [0.0j for _ in range(N)]
+    output_list = [0.0j for _ in range(N)]
 
     sign = -1 if inverse else 1
 
@@ -25,37 +26,37 @@ def dft(input_list, inverse=False):
 
         for n in range(N):
             angle = 2 * math.pi * k * n / N
-
-            sum_value += input_list[n] * (math.cos(angle) + sign * 1j * math.sin(angle))  
+            sum_value += input_list[n] * (math.cos(angle) + sign * 1j * math.sin(angle))
 
         if inverse:
             sum_value /= N
 
-        output_list[k] = sum_value  
+        output_list[k] = sum_value
 
     return output_list
 
-def dft2d(matrix, inverse=False):
+def dft2d(matrix: List[List[complex]], inverse: bool = False) -> List[List[complex]]:
     rows, cols = len(matrix), len(matrix[0])
     result_matrix = [[0.0j for _ in range(cols)] for _ in range(rows)]
 
+    # Perform DFT on columns
     for j in range(cols):
-        column_data = [matrix[i][j] for i in range(rows)]  
-        transformed_col = dft(column_data, inverse)  
+        column_data = [matrix[i][j] for i in range(rows)]
+        transformed_col = dft(column_data, inverse)
         for i in range(rows):
-            result_matrix[i][j] = transformed_col[i]  
+            result_matrix[i][j] = transformed_col[i]
 
+    # Perform DFT on rows
     for i in range(rows):
-        result_matrix[i] = dft(result_matrix[i], inverse)  
+        result_matrix[i] = dft(result_matrix[i], inverse)
 
     return result_matrix
 
-def main():
-
+def main() -> None:
     grayscale_image = read_grayscale_image()
 
     dft_matrix = dft2d(grayscale_image)
-    magnitude_spectrum_dft = np.log(1 + np.array(np.abs(dft_matrix)))
+    magnitude_spectrum_dft = np.log(1 + np.abs(dft_matrix))
 
     idft_matrix = dft2d(dft_matrix, inverse=True)
     reconstructed_image_dft = np.real(np.array(idft_matrix)).astype(np.uint8)
@@ -72,7 +73,7 @@ def main():
     plt.subplot(2, 2, 1)
     plt.imshow(magnitude_spectrum_dft, cmap='gray')
     plt.colorbar()
-    plt.title("DFT magnitude Spectrum")
+    plt.title("DFT Magnitude Spectrum")
 
     plt.subplot(2, 2, 2)
     plt.imshow(reconstructed_image_dft, cmap='gray')
@@ -91,4 +92,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
