@@ -5,18 +5,19 @@ import colour
 
 WAVELENGTH_MIN = 380 
 WAVELENGTH_MAX = 700   
-WAVELENGHT_STEP = 1 
+WAVELENGTH_STEP = 1 
+T_STEPS = 5
 
 # user defined spectral sensitivity functions
 def S(wavelength: float) -> float:
-    return math.exp(-((wavelength - 440) / 20) ** 2)
+    return math.exp(-((wavelength - 420) / 40) ** 2)
 
 def M(wavelength: float) -> float:
-    return math.exp(-((wavelength - 540) / 25) ** 2)
+    return math.exp(-((wavelength - 534) / 50) ** 2)
 
 def L(wavelength: float) -> float:
-    return math.exp(-((wavelength - 580) / 30) ** 2)
- 
+    return math.exp(-((wavelength - 564) / 60) ** 2)
+
 def wavelength_to_rgb_colour(wavelength: float) -> Tuple[float, float, float]:
     xyz = colour.wavelength_to_XYZ(wavelength)
     rgb = colour.XYZ_to_sRGB(xyz)
@@ -26,41 +27,51 @@ def get_color_coordinates(S: Callable[[float], float], M: Callable[[float], floa
     s = S(wavelength)
     m = M(wavelength)
     l = L(wavelength)
-    return (l, m, s)
+    return (s, m, l)
 
 def scale_color_coordinates(color_coordinate: Tuple[float, float, float], t: float) -> Tuple[float, float, float]:
-    return tuple(component * t for component in color_coordinate)
+    s, m, l = color_coordinate
+    return (s * t, m * t, l * t)
 
-def plot_colors(L_vals: List[float], M_vals: List[float], S_vals: List[float], colors: List[Tuple[float, float, float]]) -> None:
+def plot_colors(S_vals: List[float], M_vals: List[float], L_vals: List[float], colors: List[Tuple[float, float, float]], S_base: List[float], M_base: List[float], L_base: List[float]) -> None:
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(L_vals, M_vals, S_vals, c=colors, s=8)
-    ax.set_xlabel('L (long)')
-    ax.set_ylabel('M (medium)')
+    ax.scatter(S_vals, M_vals, L_vals, c=colors, s=4, alpha=0.7)
+    ax.plot(S_base, M_base, L_base, color='black', linewidth=4)
     ax.set_zlabel('S (short)')
+    ax.set_ylabel('M (medium)')
+    ax.set_xlabel('L (long)')
     ax.set_title('The surface of pure spectral colors in LMS space')
+    ax.text2D(0.05, 0.95, f"Wavelength range: {WAVELENGTH_MIN}-{WAVELENGTH_MAX}nm", transform=ax.transAxes)
     plt.tight_layout()
     plt.show()
 
 def main():
-    L_vals, M_vals, S_vals = [], [], []
+    S_vals, M_vals, L_vals = [], [], []
+    S_base, M_base, L_base = [], [], []
     colors = []
     wavelengths = []
 
-    for wavelength in range(WAVELENGTH_MIN, WAVELENGTH_MAX, WAVELENGHT_STEP):
+    for wavelength in range(WAVELENGTH_MIN, WAVELENGTH_MAX, WAVELENGTH_STEP):
+        s_base, m_base, l_base = get_color_coordinates(S, M, L, wavelength)
+        S_base.append(s_base)
+        M_base.append(m_base)
+        L_base.append(l_base)
+
+    for wavelength in range(WAVELENGTH_MIN, WAVELENGTH_MAX, WAVELENGTH_STEP):
         base = get_color_coordinates(S, M, L, wavelength)
         rgb = wavelength_to_rgb_colour(wavelength)
         wavelengths.append(wavelength)
 
-        for t in  range(0, 101, 5): 
+        for t in  range(0, 101, T_STEPS): 
             t = t/100.0  # 0.0, 0.05 .. 1.00
-            l, m, s = scale_color_coordinates(base, t)
-            L_vals.append(l)
-            M_vals.append(m)
+            s, m, l = scale_color_coordinates(base, t)
             S_vals.append(s)
+            M_vals.append(m)
+            L_vals.append(l)
             colors.append(rgb)
-
-    plot_colors(L_vals, M_vals, S_vals, colors)
+                
+    plot_colors(S_vals, M_vals, L_vals, colors, s_base, m_base, l_base)
 
 if __name__ == "__main__":
     main()
