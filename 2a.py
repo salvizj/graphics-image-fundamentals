@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 from typing import List
 
-# Using a 100x100 px image for faster calculation)
+# using a 100x100 px image for faster calculation)
 IMAGE_PATH = './img.png'
 
 def read_grayscale_image() -> np.ndarray:
@@ -39,14 +39,14 @@ def dft2d(matrix: List[List[complex]], inverse: bool = False) -> List[List[compl
     rows, cols = len(matrix), len(matrix[0])
     result_matrix = [[0.0j for _ in range(cols)] for _ in range(rows)]
 
-    # Perform DFT on columns
+    # perform DFT on columns
     for j in range(cols):
         column_data = [matrix[i][j] for i in range(rows)]
         transformed_col = dft(column_data, inverse)
         for i in range(rows):
             result_matrix[i][j] = transformed_col[i]
 
-    # Perform DFT on rows
+    # perform DFT on rows
     for i in range(rows):
         result_matrix[i] = dft(result_matrix[i], inverse)
 

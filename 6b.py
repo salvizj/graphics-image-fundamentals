@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import math
 from typing import List, Tuple
 
-# Projection value
+# projection value
 D = 5.0  
 
 # u and v value generation
@@ -16,7 +16,7 @@ V_VALS = [START_VAL + i * STEP for i in range(VAL_COUNT)]
 def flat_plane(u: float, v: float):
     x = u
     y = v
-    z = 0.0  # All z-values are zero for a flat plane
+    z = 0.0  # all z-values are zero for a flat plane
     return x, y, z
 
 def sphere(u: float, v: float):
@@ -47,7 +47,7 @@ def generate_surface_grid(
 def project_3d_point_to_2d(x: float, y: float, z: float, D: float) -> Tuple[float, float]:
     depth = z + D
     if depth == 0:
-        depth = 1e-5  # Using 0.00001 to avoid idvisionm
+        depth = 1e-5  # using 0.00001 to avoid zero dvisionm
     x_proj = x / depth
     y_proj = y / depth
 
@@ -94,7 +94,7 @@ def plot_triangles_3d(triangles: List[Tuple[float, float, float]]) -> None:
     ax = fig.add_subplot(111, projection="3d")
 
     for triangle in triangles:
-        x = [p[0] for p in triangle] + [triangle[0][0]] # To connect last side to first
+        x = [p[0] for p in triangle] + [triangle[0][0]] # to connect last side to first
         y = [p[1] for p in triangle] + [triangle[0][1]]
         z = [p[2] for p in triangle] + [triangle[0][2]]
         ax.plot(x, y, z, color="black", linewidth=1)

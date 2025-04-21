@@ -140,7 +140,6 @@ def show_polygon_fill(filled_pixels: List[Tuple[int, int]]) -> None:
     image.show()
 
 def main() -> None:
-    # We can change polygon type
     polygon = TRIANGLE
 
     filled_pixels = fill_polygon(polygon)

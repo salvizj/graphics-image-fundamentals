@@ -4,14 +4,14 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from typing import List, Tuple
 
-# Constants (min polygon vertices: 3 and min step: 1)
-# Polygon end and start vertice difference can`t be bigger than step count
+# constants (min polygon vertices: 3 and min step: 1)
+# polygon end and start vertice difference can`t be bigger than step count
 POLYGON_START_VERTICES = 4
 POLYGON_END_VERTICES = 11
 PARAMETRIC_INTERPOLATION_STEPS = 7
 
-# Generates a regular polygon with `n` vertices evenly spaced around a circle of radius `r`.
-# Returns a list of (x, y) coordinate tuples for each vertex.
+# generates a regular polygon with `n` vertices evenly spaced around a circle of radius `r`.
+# returns a list of (x, y) coordinate tuples for each vertex.
 def generate_polygon_vertices(n: int) -> List[Tuple[float, float]]:
     if n < 3:
         raise ValueError("A polygon must have at least 3 vertices.")
@@ -41,7 +41,7 @@ def add_vertex(polygon_vertices: List[Tuple[float, float]]) -> None:
     random_index = random.randint(0, len(polygon_vertices) - 1)
 
     vertex_before = polygon_vertices[random_index]
-    # Takes first vertex if out bounds
+    # takes first vertex if out bounds
     vertex_after = polygon_vertices[(random_index + 1) % len(polygon_vertices)]
 
     new_vertex_x = (vertex_before[0] + vertex_after[0]) / 2
@@ -52,7 +52,7 @@ def add_vertex(polygon_vertices: List[Tuple[float, float]]) -> None:
 def parametric_interpolate_polygon(polygon_start, polygon_end, t):
     interpolated_polygon = []
 
-    # Interpolate the overlapping vertices
+    # interpolate the overlapping vertices
     for i in range(min(len(polygon_start), len(polygon_end))):
         p_s = polygon_start[i]
         p_e = polygon_end[i]
@@ -61,7 +61,7 @@ def parametric_interpolate_polygon(polygon_start, polygon_end, t):
         interpolated_y = p_s[1] + (p_e[1] - p_s[1]) * t
         interpolated_polygon.append((interpolated_x, interpolated_y))
 
-    # Add remaining vertices from polygon_start
+    # add remaining vertices from polygon_start
     if len(polygon_start) > len(polygon_end):
         for j in range(len(polygon_end), len(polygon_start)):
             interpolated_polygon.append(polygon_start[j])
