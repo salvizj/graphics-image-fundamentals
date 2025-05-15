@@ -1,7 +1,7 @@
 import math
 from typing import Callable, List, Tuple
 from matplotlib import pyplot as plt
-import colour
+from matplotlib.colors import Normalize
 
 WAVELENGTH_MIN = 380 
 WAVELENGTH_MAX = 700   
@@ -18,10 +18,11 @@ def M(wavelength: float) -> float:
 def L(wavelength: float) -> float:
     return math.exp(-((wavelength - 564) / 60) ** 2)
 
-def wavelength_to_rgb_colour(wavelength: float) -> Tuple[float, float, float]:
-    xyz = colour.wavelength_to_XYZ(wavelength)
-    rgb = colour.XYZ_to_sRGB(xyz)
-    return tuple(max(0.0, min(1.0, c)) for c in rgb)
+def wavelength_to_rgb(wavelength: float) -> Tuple[float, float, float]:
+    norm = Normalize(vmin=WAVELENGTH_MIN, vmax=WAVELENGTH_MAX)
+    colormap = plt.colormaps['hsv']
+    rgba = colormap(norm(wavelength))
+    return rgba[:3]
 
 def get_color_coordinates(S: Callable[[float], float], M: Callable[[float], float], L: Callable[[float], float], wavelength: float) -> Tuple[float, float, float]:
     s = S(wavelength)
@@ -60,7 +61,7 @@ def main():
 
     for wavelength in range(WAVELENGTH_MIN, WAVELENGTH_MAX, WAVELENGTH_STEP):
         base = get_color_coordinates(S, M, L, wavelength)
-        rgb = wavelength_to_rgb_colour(wavelength)
+        rgb = wavelength_to_rgb(wavelength)
         wavelengths.append(wavelength)
 
         for t in  range(0, 101, T_STEPS): 
