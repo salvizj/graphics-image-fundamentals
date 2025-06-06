@@ -1,4 +1,3 @@
-#9.b) Izstrādāt datorprogrammu, kas realizē histogrammas vienmērīgošanu.
 from typing import List
 from PIL import Image
 import matplotlib.pyplot as plt
