@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 from PIL import Image
 import matplotlib.pyplot as plt
 
@@ -103,7 +103,7 @@ def save_image_comparison(original: List[List[int]], shrapened_image_3x3: List[L
     axes[4].set_title('Attēls ar izpludināšanas\nfiltru 5x5 masku')
     axes[4].axis('off')
 
-    filename = 'blurred_sharpened_masked_images.png'
+    filename = 'blurred_and_sharpened_images_with_3x3_and_5x5_mask.png'
     plt.savefig(filename)
     print(f"Attēls saglabāts failā '{filename}'")
 
