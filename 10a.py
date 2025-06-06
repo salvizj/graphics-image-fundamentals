@@ -1,36 +1,37 @@
-#10.a) Izstrādāt datorprogrammu, kas realizē izpludināšanas un asināšanas filtrus pie dažādu izmēru konvolūcijas maskām.
-from typing import List, Sequence, Union
+from typing import List, Union
 from PIL import Image
 import matplotlib.pyplot as plt
 
 IMAGE_PATH = './img.png'
 
 
-BLUR_MASK_3x3:  Sequence[Sequence[float]] = [
+BLUR_MASK_3x3 = [
     [1/9, 1/9, 1/9],
     [1/9, 1/9, 1/9],
     [1/9, 1/9, 1/9]
 ]
-BLUR_MASK_5x5: Sequence[Sequence[float]] = [
+
+BLUR_MASK_5x5 = [
     [1/25, 1/25, 1/25, 1/25, 1/25],
     [1/25, 1/25, 1/25, 1/25, 1/25],
     [1/25, 1/25, 1/25, 1/25, 1/25],
     [1/25, 1/25, 1/25, 1/25, 1/25],
     [1/25, 1/25, 1/25, 1/25, 1/25]
 ]
-SHARPEN_MASK_3x3:  Sequence[Sequence[int]] = [
-    [ 0, -1,  0],
-    [-1,  5, -1],
-    [ 0, -1,  0]
-]
-SHARPEN_MASK_5x5: Sequence[Sequence[int]] = [
-    [ 0,  0, -1,  0,  0],
-    [ 0,  0, -1,  0,  0],
-    [-1, -1,  9, -1, -1],
-    [ 0,  0, -1,  0,  0],
-    [ 0,  0, -1,  0,  0]
+
+SHARPEN_MASK_3x3 = [
+    [0.0, -1.0, 0.0],
+    [-1.0, 5.0, -1.0],
+    [0.0, -1.0, 0.0]
 ]
 
+SHARPEN_MASK_5x5 = [
+    [0.0, 0.0, -1.0, 0.0, 0.0],
+    [0.0, 0.0, -1.0, 0.0, 0.0],
+    [-1.0, -1.0, 9.0, -1.0, -1.0],
+    [0.0, 0.0, -1.0, 0.0, 0.0],
+    [0.0, 0.0, -1.0, 0.0, 0.0]
+]
 
 def read_grayscale_image(image_path: str) -> List[List[int]]:
     img = Image.open(image_path).convert('L') 
@@ -40,41 +41,43 @@ def read_grayscale_image(image_path: str) -> List[List[int]]:
     grayscale_img = [pixels[i * width:(i + 1) * width] for i in range(height)]
     return grayscale_img
 
-def get_pixel(image: List[List[int]], x: int, y: int) -> int:
-    height = len(image)
-    width = len(image[0])
-    if 0 <= y < height and 0 <= x < width:
-        return image[y][x]
-    else:
-        return 0  
-
 def calculate_mask_sum_for_pixel(
-    mask: Sequence[Sequence[float | int]],
+    mask: List[List[float | int]],
     image: List[List[int]],
     center_x: int,
     center_y: int
 ) -> int:
     mask_size = len(mask)
+    height = len(image)
+    width = len(image[0])
     offset = mask_size // 2
     pixel_sum = 0.0
+    left_conrner_x = center_x - offset
+    left_conrner_y = center_y - offset
+    
     for i in range(mask_size):
         for j in range(mask_size):
-            x = center_x + j - offset
-            y = center_y + i - offset
-            pixel = get_pixel(image, x, y)
+            x = left_conrner_x + i
+            y = left_conrner_y + j
+
+            pixel = 0
+            if 0 <= y < height and 0 <= x < width:
+                pixel = image[y][x]
+                
             weight = mask[i][j]
             pixel_sum += pixel * weight
+
     return int(round(pixel_sum))
 
 
-def apply_mask_to_image(mask: Sequence[Sequence[float | int]], image: Sequence[Sequence[int]]) -> List[List[int]]:
+def apply_mask_to_image(mask: List[List[float]], image: List[List[int]]) -> List[List[int]]:
     height = len(image)          
     width = len(image[0]) if height > 0 else 0 
     new_image = [[0 for _ in range(width)] for _ in range(height)]
 
     for y in range(height):
         for x in range(width):
-            new_image[y][x] = calculate_mask_sum_for_pixel(mask, image, x, y) # type: ignore
+            new_image[y][x] = calculate_mask_sum_for_pixel(mask, image, x, y)
     return new_image
 
 def save_image_comparison(original: List[List[int]], shrapened_image_3x3: List[List[int]], blurred_image_3x3: List[List[int]], sharpened_image_5x5: List[List[int]], blurred_image_5x5: List[List[int]]):
