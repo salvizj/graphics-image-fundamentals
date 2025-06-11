@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 IMAGE_PATH = './img.png'
 
-
 BLUR_MASK_3x3 = [
     [1/9, 1/9, 1/9],
     [1/9, 1/9, 1/9],
@@ -80,38 +79,43 @@ def apply_mask_to_image(mask: List[List[float]], image: List[List[int]]) -> List
             new_image[y][x] = calculate_mask_sum_for_pixel(mask, image, x, y)
     return new_image
 
-def save_image_comparison(original: List[List[int]], shrapened_image_3x3: List[List[int]], blurred_image_3x3: List[List[int]], sharpened_image_5x5: List[List[int]], blurred_image_5x5: List[List[int]]):
+def save_image_comparison(
+    original: List[List[int]], 
+    sharpened_image_3x3: List[List[int]], 
+    blurred_image_3x3: List[List[int]], 
+    sharpened_image_5x5: List[List[int]], 
+    blurred_image_5x5: List[List[int]]
+):
     _, axes = plt.subplots(1, 5, figsize=(18, 6))
 
     axes[0].imshow(original, cmap='gray', vmin=0, vmax=255)
-    axes[0].set_title('Oriģinālais attēls')
+    axes[0].set_title('Original Image')
     axes[0].axis('off')
 
-    axes[1].imshow(shrapened_image_3x3, cmap='gray', vmin=0, vmax=255)
-    axes[1].set_title('Attēls ar asināšanas\nfiltru 3x3 masku')
+    axes[1].imshow(sharpened_image_3x3, cmap='gray', vmin=0, vmax=255)
+    axes[1].set_title('Sharpened Image\n3x3 Filter')
     axes[1].axis('off')
 
     axes[2].imshow(blurred_image_3x3, cmap='gray', vmin=0, vmax=255)
-    axes[2].set_title('Attēls ar izpludināšanas\nfiltru 3x3 masku')
+    axes[2].set_title('Blurred Image\n3x3 Filter')
     axes[2].axis('off')
 
     axes[3].imshow(sharpened_image_5x5, cmap='gray', vmin=0, vmax=255)
-    axes[3].set_title('Attēls ar asināšanas\nfiltru 5x5 masku')
+    axes[3].set_title('Sharpened Image\n5x5 Filter')
     axes[3].axis('off')
 
     axes[4].imshow(blurred_image_5x5, cmap='gray', vmin=0, vmax=255)
-    axes[4].set_title('Attēls ar izpludināšanas\nfiltru 5x5 masku')
+    axes[4].set_title('Blurred Image\n5x5 Filter')
     axes[4].axis('off')
 
-    filename = 'blurred_and_sharpened_images_with_3x3_and_5x5_mask.png'
+    filename = 'sharpened_blurred_3x3_5x5.png'
     plt.savefig(filename)
-    print(f"Attēls saglabāts failā '{filename}'")
+    print(f"Image saved to file '{filename}'")
 
     plt.close()
 
     img = Image.open(filename)
     img.show()
-
 
 def main():
     grayscale_image = read_grayscale_image(IMAGE_PATH)

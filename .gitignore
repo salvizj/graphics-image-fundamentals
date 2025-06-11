@@ -7,5 +7,6 @@ __pycache__/
 *.db
 *.sqlite3
 polygon_fill.png
-histogram_equalization_result.png
-blurred_and_sharpened_images_with_3x3_and_5x5_mask
+histogram_equalization.png
+sharpened_blurred_3x3_5x5.png
+segmated_image_with_otsu_threshold.png

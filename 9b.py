@@ -56,16 +56,16 @@ def histogram_equalization(image: List[List[int]]) -> List[List[int]]:
 def save_image_comparison(original: List[List[int]], equalized: List[List[int]]):
     _, axes = plt.subplots(1, 2, figsize=(12, 6))
     axes[0].imshow(original, cmap='gray', vmin=0, vmax=255)
-    axes[0].set_title('Oriģinālais attēls')
+    axes[0].set_title('Original Image')
     axes[0].axis('off')
 
     axes[1].imshow(equalized, cmap='gray', vmin=0, vmax=255)
-    axes[1].set_title('Vienmērīgots attēls')
+    axes[1].set_title('Equalized Image')
     axes[1].axis('off')
 
-    filename = 'histogram_equalization_result.png'
+    filename = 'histogram_equalization.png'
     plt.savefig(filename)
-    print(f"Attēls saglabāts failā '{filename}'")
+    print(f"Image saved to file '{filename}'")
 
     plt.close()
 
